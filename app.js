@@ -123,18 +123,13 @@ async function loadLibrary() {
 // ════════════════════════════════════════════════════════════════════════════
 
 async function openBook(filename, title) {
-  // Switch screens
-  libraryScreen.classList.remove('active');
-  readerScreen.style.display  = 'flex';
-  readerScreen.style.opacity  = '0';
-  setTimeout(() => readerScreen.style.opacity = '1', 10);
-  readerScreen.classList.add('active');
-
-  // Reset state
+  // Reset state first
   state.pdfDoc        = null;
   state.totalPages    = 0;
   state.currentSpread = 0;
   state.currentPage   = 1;
+  state.rendering     = false;
+  state.flipping      = false;
   state.searchMatches = [];
   state.searchIndex   = -1;
   state.pageTextCache = {};
@@ -146,10 +141,21 @@ async function openBook(filename, title) {
   readerTitle.textContent = title;
   state.bookTitle = title;
 
+  // Show reader screen (keep both visible during transition)
+  readerScreen.style.display = 'flex';
+  readerScreen.style.opacity = '0';
+  readerScreen.classList.add('active');
   showReaderLoading('Opening book…');
 
+  // Fade out library, fade in reader
+  libraryScreen.style.opacity = '0';
+  await wait(300);
+  libraryScreen.classList.remove('active');
+  libraryScreen.style.opacity = '';
+  readerScreen.style.opacity = '1';
+
   try {
-    const url    = DATA_DIR + filename;
+    const url      = DATA_DIR + filename;
     const loadTask = pdfjsLib.getDocument({ url });
 
     loadTask.onProgress = (p) => {
@@ -159,19 +165,22 @@ async function openBook(filename, title) {
       }
     };
 
-    state.pdfDoc      = await loadTask.promise;
-    state.totalPages  = state.pdfDoc.numPages;
+    state.pdfDoc     = await loadTask.promise;
+    state.totalPages = state.pdfDoc.numPages;
 
     hideReaderLoading();
     updateNavButtons();
+
+    // Let layout settle before measuring dimensions for canvas sizing
+    await wait(50);
     await renderCurrentView();
 
-    // Pre-cache text for search
+    // Pre-cache text for search (background task)
     cacheAllText();
 
   } catch (err) {
-    readerLoadTxt.textContent = `Failed to load: ${err.message}`;
-    console.error(err);
+    readerLoadTxt.textContent = `⚠ Failed to load: ${err.message}`;
+    console.error('openBook error:', err);
   }
 }
 
@@ -650,15 +659,19 @@ function escHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function goBackToLibrary() {
+async function goBackToLibrary() {
   readerScreen.style.opacity = '0';
-  setTimeout(() => {
-    readerScreen.classList.remove('active');
-    readerScreen.style.display = 'none';
-    libraryScreen.classList.add('active');
-    readerScreen.style.opacity = '';
-    state.pdfDoc = null;
-  }, 300);
+  libraryScreen.style.display = 'flex';
+  libraryScreen.classList.add('active');
+  libraryScreen.style.opacity = '0';
+  await wait(300);
+  readerScreen.classList.remove('active');
+  readerScreen.style.display = 'none';
+  readerScreen.style.opacity = '';
+  libraryScreen.style.opacity = '';
+  state.pdfDoc    = null;
+  state.rendering = false;
+  state.flipping  = false;
 }
 
 
