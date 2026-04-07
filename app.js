@@ -1,6 +1,9 @@
 // Set up PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
+// --- NEW: Preload the flip sound ---
+const flipSound = new Audio('flip.mp3');
+
 const bookSelector = document.getElementById('book-selector');
 const flipbookContainer = document.getElementById('flipbook');
 const searchInput = document.getElementById('search-input');
@@ -8,7 +11,7 @@ const searchBtn = document.getElementById('search-btn');
 
 let pageFlip = null;
 let currentPdf = null;
-let pageTextData = []; // This will store the extracted text for searching
+let pageTextData = []; 
 
 // 1. Fetch the list of books on load
 async function loadBookList() {
@@ -29,7 +32,6 @@ async function loadBookList() {
 
 // 2. Load the PDF, extract text, and create the flipbook
 async function loadPdf(url) {
-    // Clear existing book and search data
     flipbookContainer.innerHTML = '';
     pageTextData = []; 
     if (pageFlip) {
@@ -44,12 +46,10 @@ async function loadPdf(url) {
         for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
             const page = await currentPdf.getPage(pageNum);
             
-            // --- NEW: Extract Text for Searching ---
+            // Extract Text for Searching
             const textContent = await page.getTextContent();
-            // Combine all text items on the page into one searchable string
             const pageText = textContent.items.map(item => item.str).join(' ');
             pageTextData.push(pageText.toLowerCase()); 
-            // ---------------------------------------
 
             // Render the visual canvas
             const viewport = page.getViewport({ scale: 1.5 }); 
@@ -62,7 +62,6 @@ async function loadPdf(url) {
             const renderContext = { canvasContext: context, viewport: viewport };
             await page.render(renderContext).promise;
             
-            // Wrap canvas in a div for StPageFlip
             const pageDiv = document.createElement('div');
             pageDiv.className = 'page-wrapper';
             pageDiv.appendChild(canvas);
@@ -88,30 +87,40 @@ async function loadPdf(url) {
 
         pageFlip.loadFromHTML(document.querySelectorAll('.page-wrapper'));
 
+        // --- NEW: Play sound on page flip ---
+        pageFlip.on('flip', (e) => {
+            // Reset time to 0 so the sound can play rapidly if the user flips quickly
+            flipSound.currentTime = 0; 
+            
+            // Play the sound. We catch errors because modern browsers block audio 
+            // from playing until the user has interacted with the page at least once.
+            flipSound.play().catch(err => {
+                console.log("Audio play prevented by browser policy:", err);
+            });
+        });
+        // ------------------------------------
+
     } catch (error) {
         console.error("Error loading PDF:", error);
     }
 }
 
-// 3. --- NEW: Search Logic ---
+// 3. Search Logic
 searchBtn.addEventListener('click', () => {
     const term = searchInput.value.toLowerCase().trim();
     if (!term || !pageFlip) return;
 
-    // Get the current page we are looking at
     let currentPage = pageFlip.getCurrentPageIndex();
     let found = false;
 
-    // Search forward from the current page
     for (let i = currentPage + 1; i < pageTextData.length; i++) {
          if (pageTextData[i].includes(term)) {
-             pageFlip.flip(i); // Turn to the page where it was found
+             pageFlip.flip(i); 
              found = true;
              break;
          }
     }
 
-    // If not found ahead, loop around and search from the beginning up to the current page
     if (!found) {
         for (let i = 0; i <= currentPage; i++) {
             if (pageTextData[i].includes(term)) {
@@ -127,19 +136,16 @@ searchBtn.addEventListener('click', () => {
     }
 });
 
-// Allow hitting "Enter" in the search box to trigger the search
 searchInput.addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
         searchBtn.click();
     }
 });
 
-// Listen for dropdown changes
 bookSelector.addEventListener('change', (e) => {
     if (e.target.value) {
         loadPdf(e.target.value);
     }
 });
 
-// Initialize
 loadBookList();
