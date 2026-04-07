@@ -37,11 +37,11 @@ html, body {
   position: fixed; inset: 0;
   display: none;
   flex-direction: column;
-  opacity: 0;
   transition: opacity 0.3s ease;
 }
 .screen.active {
   display: flex;
+  opacity: 1;
 }
 .screen.fade-out { opacity: 0; }
 
