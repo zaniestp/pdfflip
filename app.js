@@ -169,12 +169,27 @@ async function openBook(filename, title) {
     state.pdfDoc     = await loadTask.promise;
     state.totalPages = state.pdfDoc.numPages;
 
-    hideReaderLoading();
     updateNavButtons();
 
-    // Let layout settle before measuring dimensions for canvas sizing
-    await wait(50);
-    await renderCurrentView();
+    // Retry render until the stage has real dimensions (layout may not be ready immediately)
+    let rendered = false;
+    for (let attempt = 0; attempt < 10; attempt++) {
+      await wait(attempt === 0 ? 80 : 150);
+      const stage = document.querySelector('.book-stage');
+      if (stage && stage.clientWidth > 50 && stage.clientHeight > 50) {
+        await renderCurrentView();
+        rendered = true;
+        break;
+      }
+    }
+    if (!rendered) {
+      readerLoadTxt.textContent = '⚠ Could not measure page size. Try resizing the window.';
+      readerLoading.classList.remove('hidden');
+      return;
+    }
+
+    // Only hide loading after successful render
+    hideReaderLoading();
 
     // Pre-cache text for search (background task)
     cacheAllText();
@@ -193,16 +208,21 @@ async function openBook(filename, title) {
 async function renderCurrentView() {
   if (!state.pdfDoc || state.rendering) return;
   state.rendering = true;
-
-  if (IS_MOBILE()) {
-    await renderMobilePage(state.currentPage);
-  } else {
-    await renderDesktopSpread(state.currentSpread);
+  try {
+    if (IS_MOBILE()) {
+      await renderMobilePage(state.currentPage);
+    } else {
+      await renderDesktopSpread(state.currentSpread);
+    }
+    updatePageIndicator();
+    updateNavButtons();
+  } catch (err) {
+    console.error('Render error:', err);
+    readerLoadTxt.textContent = '⚠ Render error: ' + err.message;
+    readerLoading.classList.remove('hidden');
+  } finally {
+    state.rendering = false;
   }
-
-  updatePageIndicator();
-  updateNavButtons();
-  state.rendering = false;
 }
 
 /* ─ Desktop: render left + right pages ─ */
@@ -211,8 +231,8 @@ async function renderDesktopSpread(spreadIndex) {
   const rightPageNum = spreadIndex * 2 + 2;
 
   const stage = document.querySelector('.book-stage');
-  const stageW = stage.clientWidth  - 48;
-  const stageH = stage.clientHeight - 80;
+  const stageW = Math.max(stage.clientWidth  - 48, 200);
+  const stageH = Math.max(stage.clientHeight - 80, 200);
 
   // Get dimensions from first page to set up
   const firstPage = await state.pdfDoc.getPage(Math.min(leftPageNum, state.totalPages));
@@ -221,6 +241,7 @@ async function renderDesktopSpread(spreadIndex) {
   // Each page gets half the width
   const pageW = Math.floor(stageW / 2);
   const scale = Math.min(pageW / vp0.width, stageH / vp0.height, 2.5);
+  if (!scale || scale <= 0) throw new Error('Stage has no dimensions yet');
 
   const renderW = Math.floor(vp0.width  * scale);
   const renderH = Math.floor(vp0.height * scale);
@@ -267,12 +288,13 @@ async function renderMobilePage(pageNum) {
   if (pageNum < 1 || pageNum > state.totalPages) return;
 
   const stage = document.querySelector('.book-stage');
-  const w = stage.clientWidth  - 24;
-  const h = stage.clientHeight - 48;
+  const w = Math.max(stage.clientWidth  - 24, 100);
+  const h = Math.max(stage.clientHeight - 48, 100);
 
   const page = await state.pdfDoc.getPage(pageNum);
   const vp0  = page.getViewport({ scale: 1 });
   const scale = Math.min(w / vp0.width, h / vp0.height, 2.5);
+  if (!scale || scale <= 0) throw new Error('Stage has no dimensions yet');
   const vp    = page.getViewport({ scale });
 
   canvasMobile.width  = Math.floor(vp.width);
