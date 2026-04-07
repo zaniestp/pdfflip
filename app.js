@@ -3,8 +3,12 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 
 const bookSelector = document.getElementById('book-selector');
 const flipbookContainer = document.getElementById('flipbook');
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+
 let pageFlip = null;
 let currentPdf = null;
+let pageTextData = []; // This will store the extracted text for searching
 
 // 1. Fetch the list of books on load
 async function loadBookList() {
@@ -23,10 +27,11 @@ async function loadBookList() {
     }
 }
 
-// 2. Load the PDF and create the flipbook
+// 2. Load the PDF, extract text, and create the flipbook
 async function loadPdf(url) {
-    // Clear existing book
+    // Clear existing book and search data
     flipbookContainer.innerHTML = '';
+    pageTextData = []; 
     if (pageFlip) {
         pageFlip.destroy();
     }
@@ -34,27 +39,27 @@ async function loadPdf(url) {
     try {
         currentPdf = await pdfjsLib.getDocument(url).promise;
         const totalPages = currentPdf.numPages;
-        
-        // Create an array to hold all our canvas elements
         const pages = [];
 
         for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
             const page = await currentPdf.getPage(pageNum);
             
-            // Adjust scale based on your needs
+            // --- NEW: Extract Text for Searching ---
+            const textContent = await page.getTextContent();
+            // Combine all text items on the page into one searchable string
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            pageTextData.push(pageText.toLowerCase()); 
+            // ---------------------------------------
+
+            // Render the visual canvas
             const viewport = page.getViewport({ scale: 1.5 }); 
-            
             const canvas = document.createElement('canvas');
             canvas.className = 'page';
             canvas.width = viewport.width;
             canvas.height = viewport.height;
             
             const context = canvas.getContext('2d');
-            const renderContext = {
-                canvasContext: context,
-                viewport: viewport
-            };
-            
+            const renderContext = { canvasContext: context, viewport: viewport };
             await page.render(renderContext).promise;
             
             // Wrap canvas in a div for StPageFlip
@@ -66,7 +71,7 @@ async function loadPdf(url) {
             pages.push(pageDiv);
         }
 
-        // 3. Initialize StPageFlip
+        // Initialize StPageFlip
         pageFlip = new St.PageFlip(flipbookContainer, {
             width: pages[0].querySelector('canvas').width, 
             height: pages[0].querySelector('canvas').height,
@@ -78,7 +83,6 @@ async function loadPdf(url) {
             maxShadowOpacity: 0.5,
             showCover: true,
             mobileScrollSupport: false,
-            // Magic setting for responsive: Single page on mobile, Double on PC
             usePortrait: true 
         });
 
@@ -88,6 +92,47 @@ async function loadPdf(url) {
         console.error("Error loading PDF:", error);
     }
 }
+
+// 3. --- NEW: Search Logic ---
+searchBtn.addEventListener('click', () => {
+    const term = searchInput.value.toLowerCase().trim();
+    if (!term || !pageFlip) return;
+
+    // Get the current page we are looking at
+    let currentPage = pageFlip.getCurrentPageIndex();
+    let found = false;
+
+    // Search forward from the current page
+    for (let i = currentPage + 1; i < pageTextData.length; i++) {
+         if (pageTextData[i].includes(term)) {
+             pageFlip.flip(i); // Turn to the page where it was found
+             found = true;
+             break;
+         }
+    }
+
+    // If not found ahead, loop around and search from the beginning up to the current page
+    if (!found) {
+        for (let i = 0; i <= currentPage; i++) {
+            if (pageTextData[i].includes(term)) {
+                pageFlip.flip(i);
+                found = true;
+                break;
+            }
+        }
+    }
+
+    if (!found) {
+        alert(`The word "${term}" was not found in this book.`);
+    }
+});
+
+// Allow hitting "Enter" in the search box to trigger the search
+searchInput.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        searchBtn.click();
+    }
+});
 
 // Listen for dropdown changes
 bookSelector.addEventListener('change', (e) => {
