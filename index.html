@@ -1,136 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlipBook Reader</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive PDF Flipbook</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.js"></script>
 </head>
 <body>
 
-  <!-- ===== LIBRARY SCREEN ===== -->
-  <div id="library-screen" class="screen active">
-    <div class="library-bg"></div>
-    <header class="lib-header">
-      <div class="lib-logo">
-        <span class="lib-logo-icon">📖</span>
-        <span class="lib-logo-text">FlipBook</span>
-      </div>
-      <p class="lib-subtitle">Your Personal Reading Room</p>
+    <header>
+        <div class="controls">
+            <select id="book-selector">
+                <option value="">Select a book...</option>
+            </select>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search word...">
+                <button id="search-btn">Find</button>
+            </div>
+        </div>
     </header>
-    <div class="lib-shelf" id="book-shelf">
-      <!-- Book cards injected by JS -->
-      <div class="lib-loading" id="lib-loading">
-        <div class="spinner"></div>
-        <p>Loading your library…</p>
-      </div>
-    </div>
-  </div>
 
-  <!-- ===== READER SCREEN ===== -->
-  <div id="reader-screen" class="screen">
-
-    <!-- Top Bar -->
-    <div class="reader-topbar">
-      <button class="btn-icon" id="btn-back" title="Back to Library">
-        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-      <span class="reader-title" id="reader-title">Book Title</span>
-      <div class="topbar-right">
-        <button class="btn-icon" id="btn-search-toggle" title="Search">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        </button>
-        <button class="btn-icon" id="btn-fullscreen" title="Fullscreen">
-          <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Search Bar -->
-    <div class="search-bar" id="search-bar">
-      <div class="search-inner">
-        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="search-input" placeholder="Search words in this book…" autocomplete="off" />
-        <span class="search-count" id="search-count"></span>
-        <button class="btn-icon btn-sm" id="btn-prev-result" title="Previous result">
-          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button class="btn-icon btn-sm" id="btn-next-result" title="Next result">
-          <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-        <button class="btn-icon btn-sm" id="btn-search-close" title="Close Search">
-          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Page Controls -->
-    <div class="page-controls">
-      <button class="nav-btn" id="btn-prev">
-        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-      <span class="page-indicator" id="page-indicator">Page 1 of 1</span>
-      <button class="nav-btn" id="btn-next">
-        <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-      </button>
-    </div>
-
-    <!-- Book Stage -->
-    <div class="book-stage" id="book-stage">
-      <!-- Desktop: Two-page flip book -->
-      <div class="book-container" id="book-container">
-        <div class="book-shadow"></div>
-        <div class="book" id="book">
-          <!-- Left page -->
-          <div class="page-wrapper left-page">
-            <div class="page" id="page-left">
-              <canvas id="canvas-left"></canvas>
-              <div class="page-num" id="page-num-left"></div>
-            </div>
-          </div>
-          <!-- Book spine -->
-          <div class="book-spine"></div>
-          <!-- Right page -->
-          <div class="page-wrapper right-page">
-            <div class="page" id="page-right">
-              <canvas id="canvas-right"></canvas>
-              <div class="page-num" id="page-num-right"></div>
-            </div>
-          </div>
-          <!-- Flip animation overlay -->
-          <div class="flip-overlay" id="flip-overlay">
-            <div class="flip-card" id="flip-card">
-              <div class="flip-front"><canvas id="canvas-flip-front"></canvas></div>
-              <div class="flip-back"><canvas id="canvas-flip-back"></canvas></div>
-            </div>
-          </div>
+    <main>
+        <div class="container">
+            <div id="flipbook"></div>
         </div>
-      </div>
+    </main>
 
-      <!-- Mobile: Single page swipe -->
-      <div class="mobile-container" id="mobile-container">
-        <div class="mobile-page" id="mobile-page">
-          <canvas id="canvas-mobile"></canvas>
-          <div class="page-num" id="page-num-mobile"></div>
-        </div>
-        <div class="swipe-hint" id="swipe-hint">
-          <span>← Swipe to navigate →</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading overlay -->
-    <div class="reader-loading" id="reader-loading">
-      <div class="spinner"></div>
-      <p id="reader-loading-text">Opening book…</p>
-    </div>
-
-  </div>
-
-  <!-- PDF.js from CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
