@@ -141,18 +141,19 @@ async function openBook(filename, title) {
   readerTitle.textContent = title;
   state.bookTitle = title;
 
-  // Show reader screen (keep both visible during transition)
-  readerScreen.style.display = 'flex';
+  // Show reader screen — start transparent, fade in
   readerScreen.style.opacity = '0';
+  readerScreen.style.display = 'flex';
   readerScreen.classList.add('active');
   showReaderLoading('Opening book…');
 
-  // Fade out library, fade in reader
+  // Fade out library
   libraryScreen.style.opacity = '0';
   await wait(300);
   libraryScreen.classList.remove('active');
-  libraryScreen.style.opacity = '';
-  readerScreen.style.opacity = '1';
+  libraryScreen.style.display = 'none';
+  libraryScreen.style.opacity = '';  // reset for next time
+  readerScreen.style.opacity = '';   // let CSS opacity:1 take over
 
   try {
     const url      = DATA_DIR + filename;
@@ -660,15 +661,17 @@ function escHtml(str) {
 }
 
 async function goBackToLibrary() {
+  // Fade out reader
   readerScreen.style.opacity = '0';
+  // Show library underneath, start transparent
+  libraryScreen.style.opacity = '0';
   libraryScreen.style.display = 'flex';
   libraryScreen.classList.add('active');
-  libraryScreen.style.opacity = '0';
   await wait(300);
   readerScreen.classList.remove('active');
   readerScreen.style.display = 'none';
   readerScreen.style.opacity = '';
-  libraryScreen.style.opacity = '';
+  libraryScreen.style.opacity = ''; // CSS opacity:1 takes over
   state.pdfDoc    = null;
   state.rendering = false;
   state.flipping  = false;
