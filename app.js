@@ -25,6 +25,19 @@ async function loadBookList() {
             option.textContent = book.title;
             bookSelector.appendChild(option);
         });
+
+        // --- NEW: Auto-load the first book ---
+        if (books.length > 0) {
+            const firstBookUrl = `data/${books[0].file}`;
+            
+            // Set the dropdown menu to show the first book as selected
+            bookSelector.value = firstBookUrl; 
+            
+            // Load the PDF
+            loadPdf(firstBookUrl); 
+        }
+        // -------------------------------------
+
     } catch (error) {
         console.error("Error loading books.json:", error);
     }
