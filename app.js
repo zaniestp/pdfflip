@@ -1,8 +1,13 @@
 const bookSelector = document.getElementById('book-selector');
 const flipbookContainer = document.getElementById('flipbook');
+const toggleBtn = document.getElementById('toggle-toolbar-btn');
 let myFlipBook = null;
 
-// Helper function to print errors to your phone screen
+// NEW: Listen for taps on the "T" button to show/hide the toolbar
+toggleBtn.addEventListener('click', () => {
+    flipbookContainer.classList.toggle('hide-toolbar');
+});
+
 function showError(message) {
     flipbookContainer.innerHTML = `<div style="color: #ff6b6b; padding: 20px; font-weight: bold; font-size: 18px; text-align: center;">Error: ${message}</div>`;
 }
@@ -18,7 +23,6 @@ async function loadBookList() {
         
         const books = await response.json();
         
-        // Clear out options to prevent duplicates
         bookSelector.innerHTML = '<option value="">Select a book...</option>';
         
         books.forEach(book => {
@@ -53,12 +57,16 @@ function loadPdf(url) {
     flipbookContainer.innerHTML = "<div style='color: white; padding: 20px; text-align: center;'>Loading PDF...</div>";
 
     const options = {
-        // FIXED: Turn the 3D physics engine back on!
         webgl: true, 
         soundEnable: true,
         backgroundColor: "transparent",
         height: "100%",
-        singlePageMode: 0 
+        
+        // FIXED: Reverts to detecting mobile naturally (Auto)
+        singlePageMode: 0, 
+        
+        // NEW: Speeds up the render time slightly to help reduce the white flash on mobile
+        pdfRenderQuality: 0.8 
     };
 
     try {
