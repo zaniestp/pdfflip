@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive PDF Flipbook</title>
+    <title>3D PDF Flipbook</title>
+    
     <link rel="stylesheet" href="style.css">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.js"></script>
+    <link href="https://unpkg.com/dearflip@latest/css/dflip.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/dearflip@latest/css/themify-icons.min.css" rel="stylesheet">
 </head>
 <body>
 
@@ -16,11 +17,7 @@
             <select id="book-selector">
                 <option value="">Select a book...</option>
             </select>
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="Search word...">
-                <button id="search-btn">Find</button>
             </div>
-        </div>
     </header>
 
     <main>
@@ -29,6 +26,9 @@
         </div>
     </main>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/dearflip@latest/js/dflip.min.js"></script>
+    
     <script src="app.js"></script>
 </body>
 </html>
