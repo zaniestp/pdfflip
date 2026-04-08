@@ -41,7 +41,6 @@ async function loadBookList() {
 }
 
 function loadPdf(url) {
-    // SECURITY/TIMING CHECK: Make sure DearFlip actually loaded before trying to use it!
     if (typeof $.fn.flipBook !== "function") {
         showError("The DearFlip library was blocked by your browser or hasn't finished downloading. Try refreshing the page.");
         return;
@@ -51,11 +50,11 @@ function loadPdf(url) {
         $('#flipbook').empty();
     }
 
-    // Set a loading message for the PDF
     flipbookContainer.innerHTML = "<div style='color: white; padding: 20px; text-align: center;'>Loading PDF...</div>";
 
     const options = {
-        webgl: false, 
+        // FIXED: Turn the 3D physics engine back on!
+        webgl: true, 
         soundEnable: true,
         backgroundColor: "transparent",
         height: "100%",
@@ -75,7 +74,6 @@ bookSelector.addEventListener('change', (e) => {
     }
 });
 
-// FIXED: Wait until the whole page and all external scripts finish loading before starting!
 window.addEventListener('load', () => {
     loadBookList();
 });
