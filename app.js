@@ -41,6 +41,12 @@ async function loadBookList() {
 }
 
 function loadPdf(url) {
+    // SECURITY/TIMING CHECK: Make sure DearFlip actually loaded before trying to use it!
+    if (typeof $.fn.flipBook !== "function") {
+        showError("The DearFlip library was blocked by your browser or hasn't finished downloading. Try refreshing the page.");
+        return;
+    }
+
     if (myFlipBook) {
         $('#flipbook').empty();
     }
@@ -49,11 +55,10 @@ function loadPdf(url) {
     flipbookContainer.innerHTML = "<div style='color: white; padding: 20px; text-align: center;'>Loading PDF...</div>";
 
     const options = {
-        webgl: false, // Turned OFF for better mobile browser stability
+        webgl: false, 
         soundEnable: true,
         backgroundColor: "transparent",
         height: "100%",
-        // FIXED: Using 0 instead of DFLIP.SINGLE_PAGE_MODE.AUTO to prevent the undefined error
         singlePageMode: 0 
     };
 
@@ -70,5 +75,7 @@ bookSelector.addEventListener('change', (e) => {
     }
 });
 
-// Start app
-loadBookList();
+// FIXED: Wait until the whole page and all external scripts finish loading before starting!
+window.addEventListener('load', () => {
+    loadBookList();
+});
