@@ -18,6 +18,9 @@ async function loadBookList() {
         
         const books = await response.json();
         
+        // Clear out options to prevent duplicates
+        bookSelector.innerHTML = '<option value="">Select a book...</option>';
+        
         books.forEach(book => {
             const option = document.createElement('option');
             option.value = `data/${book.file}`;
@@ -50,7 +53,8 @@ function loadPdf(url) {
         soundEnable: true,
         backgroundColor: "transparent",
         height: "100%",
-        singlePageMode: DFLIP.SINGLE_PAGE_MODE.AUTO 
+        // FIXED: Using 0 instead of DFLIP.SINGLE_PAGE_MODE.AUTO to prevent the undefined error
+        singlePageMode: 0 
     };
 
     try {
