@@ -33,7 +33,7 @@ git clone [https://github.com/zaniestp/pdfflip.git](https://github.com/yourusern
 
 📦 3D-Flipbook-App
  ┣ 📂 data              # Place all your PDF files in this folder
- ┃ ┗ 📜 PHS_THD_2026.pdf
+ ┃ ┗ 📜 mybook_2026.pdf
  ┣ 📜 index.html        # Main HTML skeleton and UI
  ┣ 📜 style.css         # Custom styling and UI overrides
  ┣ 📜 app.js            # Flipbook logic, WebGL settings, and UI toggles
