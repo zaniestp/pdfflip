@@ -3,7 +3,10 @@ const flipbookContainer = document.getElementById('flipbook');
 const toggleBtn = document.getElementById('toggle-toolbar-btn');
 let myFlipBook = null;
 
-// NEW: Listen for taps on the "T" button to show/hide the toolbar
+// FIXED: Turn the toolbar OFF by default as soon as the app loads
+flipbookContainer.classList.add('hide-toolbar');
+
+// Listen for taps on the "T" button to show/hide the toolbar
 toggleBtn.addEventListener('click', () => {
     flipbookContainer.classList.toggle('hide-toolbar');
 });
@@ -61,12 +64,11 @@ function loadPdf(url) {
         soundEnable: true,
         backgroundColor: "transparent",
         height: "100%",
-        
-        // FIXED: Reverts to detecting mobile naturally (Auto)
         singlePageMode: 0, 
+        pdfRenderQuality: 0.8,
         
-        // NEW: Speeds up the render time slightly to help reduce the white flash on mobile
-        pdfRenderQuality: 0.8 
+        // NEW: Force the search function to be enabled
+        enableSearch: true
     };
 
     try {
