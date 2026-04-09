@@ -1,117 +1,26 @@
-# 📖 FlipBook Reader
+# 📚 3D Interactive PDF Flipbook
 
-A beautiful, zero-dependency PDF flipbook reader that runs entirely in the browser. Deploy on GitHub Pages with no build step required.
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![jQuery](https://img.shields.io/badge/jquery-%230769AD.svg?style=for-the-badge&logo=jquery&logoColor=white)
+
+A beautiful, responsive, web-based 3D flipbook application that brings static PDFs to life. Built with raw HTML/CSS/JS and powered by the DearFlip library, this app features realistic 3D page curls, dynamic library loading, and a custom mobile-first UI.
 
 ## ✨ Features
 
-| Feature | Desktop | Mobile |
-|---------|---------|--------|
-| Animated page flip | ✅ Two-page spread with 3D flip | ✅ Single-page swipe |
-| PDF rendering | ✅ PDF.js | ✅ PDF.js |
-| Word search | ✅ Highlighted results | ✅ Highlighted results |
-| Keyboard navigation | ✅ Arrow keys / Space | — |
-| Fullscreen | ✅ | ✅ |
+* **📖 Realistic 3D WebGL Physics:** Enjoy gorgeous, symmetrical page-curl effects that simulate the feel of a physical book.
+* **📱 Mobile Optimized:** Automatically detects screen sizes to adjust the viewing experience, with customized render settings to ensure smooth performance on mobile devices.
+* **📂 Dynamic Library:** Easily swap between different PDFs using the built-in dropdown selector. The list is populated automatically from a lightweight JSON file.
+* **🎨 Custom UI Control:** A minimalist, edge-to-edge reading experience. The default control toolbar is hidden on load to maximize screen real estate, accessible only via a custom toggle switch.
+* **🔒 Clean Interface:** Unnecessary default buttons (like external downloads and outlines) have been forcefully removed for a streamlined, app-like feel.
 
-## 🗂 Project Structure
+---
 
-```
-flipbook-app/
-├── index.html        ← Main app (single page)
-├── style.css         ← All styles (editorial luxury theme)
-├── app.js            ← All JavaScript logic
-├── books.inc         ← List of PDFs to show in library
-├── data/             ← Put your PDF files here
-│   ├── my-book.pdf
-│   └── another.pdf
-└── README.md
-```
+## 🚀 Getting Started
 
-## 🚀 Quick Start
+Because this app uses JavaScript's `fetch()` API to read the `books.json` file, **it must be run through a local web server.** Simply double-clicking the `index.html` file in your browser will result in a CORS error.
 
-### 1. Add your PDFs
-
-Place your PDF files inside the `data/` folder:
-
-```
-data/
-├── my-awesome-book.pdf
-└── research-paper.pdf
-```
-
-### 2. Register them in `books.inc`
-
-Edit `books.inc` — one filename per line. Lines starting with `#` are ignored:
-
-```
-# My Library
-my-awesome-book.pdf
-research-paper.pdf
-```
-
-### 3. Deploy to GitHub Pages
-
-1. Push this repo to GitHub
-2. Go to **Settings → Pages**
-3. Set source to **main branch / root**
-4. Your reader will be live at `https://yourusername.github.io/your-repo/`
-
-### Running Locally
-
-Because browsers block local file access, use a simple server:
-
+### 1. Clone the repository
 ```bash
-# Python 3
-python -m http.server 8080
-
-# Node.js (npx)
-npx serve .
-
-# VS Code: use the Live Server extension
-```
-
-Then open `http://localhost:8080`
-
-## ⌨️ Keyboard Shortcuts
-
-| Key | Action |
-|-----|--------|
-| `→` / `Space` | Next page |
-| `←` | Previous page |
-| `F` | Toggle search |
-| `Escape` | Close search / Back to library |
-| `Enter` (in search) | Next result |
-| `Shift + Enter` | Previous result |
-
-## 📱 Mobile
-
-On mobile devices (screen width ≤ 768px), the reader automatically switches to single-page mode. Navigate by:
-- **Swiping left/right** on the page
-- Tapping the **← →** arrow buttons
-
-## 🎨 Customisation
-
-The color palette lives in CSS variables at the top of `style.css`:
-
-```css
-:root {
-  --ink:        #1a1008;   /* Dark background */
-  --cream:      #f5efe3;   /* Page color */
-  --gold:       #c8973a;   /* Accent */
-  --page-bg:    #fdf8f0;   /* PDF page background */
-}
-```
-
-## 📦 Dependencies (CDN — no install needed)
-
-- [PDF.js 3.11.174](https://mozilla.github.io/pdf.js/) — PDF rendering
-- [Google Fonts](https://fonts.google.com/) — Playfair Display + DM Sans
-
-## ⚠️ Notes
-
-- PDFs must be served over HTTP(S) — direct `file://` access is blocked by browsers (CORS).
-- Large PDFs load progressively; a loading percentage is shown.
-- Search highlights work on text-based PDFs. Scanned image PDFs will not return search results unless OCR'd first.
-
-## License
-
-MIT
+git clone [https://github.com/yourusername/your-repo-name.git](https://github.com/yourusername/your-repo-name.git)
