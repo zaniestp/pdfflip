@@ -19,7 +19,7 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px; /* Adds a nice space between the dropdown and the button */
+    gap: 10px; 
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     z-index: 10;
 }
@@ -32,7 +32,6 @@ select {
     min-width: 250px;
 }
 
-/* NEW: Styling for the T toggle button */
 #toggle-toolbar-btn {
     background-color: #3498db;
     color: white;
@@ -61,7 +60,15 @@ select {
     align-items: center;
 }
 
-/* NEW: The JS will apply this class when the button is tapped */
 .hide-toolbar .df-ui-controls {
+    display: none !important;
+}
+
+/* FIXED: The "Nuclear Option" to forcefully erase the download and outline buttons */
+.df-ui-download,
+.df-ui-outline,
+.df-ui-bookmark,
+[title="Download PDF"],
+[title="Outline"] {
     display: none !important;
 }
