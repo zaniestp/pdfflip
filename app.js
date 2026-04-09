@@ -3,7 +3,7 @@ const flipbookContainer = document.getElementById('flipbook');
 const toggleBtn = document.getElementById('toggle-toolbar-btn');
 let myFlipBook = null;
 
-// FIXED: Turn the toolbar OFF by default as soon as the app loads
+// Keeps the toolbar OFF by default as soon as the app loads
 flipbookContainer.classList.add('hide-toolbar');
 
 // Listen for taps on the "T" button to show/hide the toolbar
@@ -67,8 +67,11 @@ function loadPdf(url) {
         singlePageMode: 0, 
         pdfRenderQuality: 0.8,
         
-        // NEW: Force the search function to be enabled
-        enableSearch: true
+        // FIXED: The correct command DearFlip uses to show the search button
+        showSearchControl: true,
+        
+        // NEW: Completely disables and hides the download button
+        showDownloadControl: false
     };
 
     try {
