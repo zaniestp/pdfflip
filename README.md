@@ -15,6 +15,9 @@ A beautiful, responsive, web-based 3D flipbook application that brings static PD
 * **🎨 Custom UI Control:** A minimalist, edge-to-edge reading experience. The default control toolbar is hidden on load to maximize screen real estate, accessible only via a custom toggle switch.
 * **🔒 Clean Interface:** Unnecessary default buttons (like external downloads and outlines) have been forcefully removed for a streamlined, app-like feel.
 
+
+
+
 ---
 
 ## 🚀 Getting Started
@@ -33,14 +36,17 @@ git clone [https://github.com/zaniestp/pdfflip.git](https://github.com/yourusern
  ┣ 📜 app.js            # Flipbook logic, WebGL settings, and UI toggles
  ┗ 📜 books.json        # Database to populate the dropdown menu
 
-## 📖 **books.json structure**
+```
+## 📖 books.json structure
+```
 [
   {
-    "title": "PHS THD Programme Booklet 2026",
-    "file": "PHS_THD_2026.pdf"
+    "title": "Programme Booklet 2026",
+    "file": "THD_2026.pdf"
   },
   {
     "title": "My New Awesome Book",
     "file": "new_book.pdf"
   }
 ]
+
