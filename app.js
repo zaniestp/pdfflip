@@ -65,7 +65,7 @@ function loadPdf(url) {
         backgroundColor: "transparent",
         height: "100%",
         singlePageMode: 0, 
-        pdfRenderQuality: 0.8,
+        pdfRenderQuality: 0.5,
         
         // FIXED: The correct DearFlip command to remove buttons from the toolbar
         hideControls: "download,outline"
