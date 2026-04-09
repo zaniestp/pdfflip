@@ -67,11 +67,8 @@ function loadPdf(url) {
         singlePageMode: 0, 
         pdfRenderQuality: 0.8,
         
-        // FIXED: The correct command DearFlip uses to show the search button
-        showSearchControl: true,
-        
-        // NEW: Completely disables and hides the download button
-        showDownloadControl: false
+        // FIXED: The correct DearFlip command to remove buttons from the toolbar
+        hideControls: "download,outline"
     };
 
     try {
