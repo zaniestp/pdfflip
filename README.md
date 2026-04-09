@@ -23,4 +23,24 @@ Because this app uses JavaScript's `fetch()` API to read the `books.json` file, 
 
 ### 1. Clone the repository
 ```bash
-git clone [https://github.com/yourusername/your-repo-name.git](https://github.com/yourusername/your-repo-name.git)
+git clone [https://github.com/zaniestp/pdfflip.git](https://github.com/yourusername/your-repo-name.git)
+
+📦 3D-Flipbook-App
+ ┣ 📂 data              # Place all your PDF files in this folder
+ ┃ ┗ 📜 PHS_THD_2026.pdf
+ ┣ 📜 index.html        # Main HTML skeleton and UI
+ ┣ 📜 style.css         # Custom styling and UI overrides
+ ┣ 📜 app.js            # Flipbook logic, WebGL settings, and UI toggles
+ ┗ 📜 books.json        # Database to populate the dropdown menu
+
+## 📖 **books.json structure**
+[
+  {
+    "title": "PHS THD Programme Booklet 2026",
+    "file": "PHS_THD_2026.pdf"
+  },
+  {
+    "title": "My New Awesome Book",
+    "file": "new_book.pdf"
+  }
+]
