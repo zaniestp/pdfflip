@@ -1,74 +1,173 @@
+:root {
+    --bg: #2c3e50;
+    --bar: #1a252f;
+    --accent: #3498db;
+    --accent-hover: #2d86c4;
+    --text: #ecf0f1;
+    --error: #ff6b6b;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #2c3e50;
+    background-color: var(--bg);
+    color: var(--text);
     display: flex;
     flex-direction: column;
+    /* dvh = the visible height on phones, so the book isn't hidden behind the browser's address bar */
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
 }
 
 header {
-    background: #1a252f;
-    padding: 15px;
+    background: var(--bar);
+    padding: 10px 15px;
+    padding-top: max(10px, env(safe-area-inset-top));
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.controls {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    z-index: 10;
+    gap: 8px;
+    max-width: 640px;
+    margin: 0 auto;
 }
 
 select {
-    padding: 10px;
-    border-radius: 5px;
+    flex: 1;
+    min-width: 0;
+    max-width: 420px;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 6px;
     border: none;
-    font-size: 16px;
-    min-width: 250px;
+    font-size: 16px; /* 16px stops iPhones zooming in on tap */
+    background: #fff;
+    color: #222;
 }
 
-#toggle-toolbar-btn {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
+select:disabled {
+    opacity: 1;
+    color: #222;
+}
+
+.icon-btn {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
     width: 40px;
     height: 40px;
-    font-size: 18px;
-    font-weight: bold;
+    background-color: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.15s;
 }
 
-.container {
-    flex-grow: 1;
-    width: 100%;
-    height: 85vh; 
-    min-height: 400px; 
+.icon-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+}
+
+.icon-btn:hover:not(:disabled) {
+    background-color: var(--accent-hover);
+}
+
+.icon-btn[aria-pressed="true"] {
+    background-color: #fff;
+    color: var(--accent);
+}
+
+.icon-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+select:focus-visible,
+.icon-btn:focus-visible {
+    outline: 3px solid #f1c40f;
+    outline-offset: 2px;
+}
+
+main {
+    flex: 1;
+    min-height: 0; /* lets the flex child shrink instead of overflowing */
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 #flipbook {
     height: 100%;
     width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
+.status {
+    padding: 24px;
+    text-align: center;
+    font-size: 17px;
+    color: var(--text);
+}
+
+.status.error {
+    color: var(--error);
+    font-weight: bold;
+}
+
+/* Toast for "Link copied" */
+#toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    transform: translate(-50%, 20px);
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 15px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 100;
+}
+
+#toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* DearFlip toolbar hidden until the toolbar button is pressed */
 .hide-toolbar .df-ui-controls {
     display: none !important;
 }
 
-/* FIXED: The "Nuclear Option" to forcefully erase the download and outline buttons */
+/* Backup for hideControls in app.js: keep download/outline buttons off */
 .df-ui-download,
 .df-ui-outline,
-.df-ui-bookmark,
-[title="Download PDF"],
-[title="Outline"] {
+.df-ui-bookmark {
     display: none !important;
 }
